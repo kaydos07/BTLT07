@@ -5,8 +5,166 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BTLT07"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Media Player"
+        Width="920"
+        Height="560"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
+        <!-- Vùng nội dung chính: bên trái là khung phát media, bên phải là danh sách phát -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="260" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Vùng bên trái: Khung video và thông tin trạng thái qua Data Binding -->
+            <DockPanel Grid.Column="0" Margin="0,0,10,0">
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,6,0,0">
+                    <TextBlock Text="{Binding CurrentTrackText}"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding StatusText}"
+                               TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+                <Border Background="Black">
+                    <MediaElement x:Name="Player"
+                                  LoadedBehavior="Manual"
+                                  UnloadedBehavior="Stop"
+                                  ScrubbingEnabled="True"
+                                  Stretch="Uniform"
+                                  Volume="0.5" />
+                </Border>
+            </DockPanel>
+
+            <!-- Vùng bên phải: Danh sách phát và 3 nút quản lý -->
+            <DockPanel Grid.Column="1">
+                <TextBlock DockPanel.Dock="Top"
+                           Margin="0,0,0,6"
+                           Text="Danh sách phát"
+                           FontWeight="Bold" />
+
+                <Grid DockPanel.Dock="Bottom" Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="AddFileButton"
+                            Grid.Column="0"
+                            Content="Thêm file..."
+                            Margin="0,0,4,0"
+                            Padding="4,4" />
+                    <Button x:Name="RemoveSelectedButton"
+                            Grid.Column="1"
+                            Content="Xóa bài chọn"
+                            Margin="2,0,2,0"
+                            Padding="4,4" />
+                    <Button x:Name="ClearAllButton"
+                            Grid.Column="2"
+                            Content="Xóa hết"
+                            Margin="4,0,0,0"
+                            Padding="4,4" />
+                </Grid>
+
+                <ListBox x:Name="PlaylistBox"
+                         ItemsSource="{Binding Playlist}"
+                         SelectedItem="{Binding SelectedItem}"
+                         DisplayMemberPath="FileName" />
+            </DockPanel>
+        </Grid>
+
+        <!-- Thanh điều khiển bên dưới: thanh tua + các nút điều khiển -->
+        <StackPanel Grid.Row="1" Margin="0,10,0,0">
+            <!-- Thanh tua và hiển thị thời gian -->
+            <DockPanel Margin="0,0,0,8">
+                <TextBlock DockPanel.Dock="Right"
+                           Margin="10,0,0,0"
+                           Text="{Binding TimeText}"
+                           VerticalAlignment="Center" />
+
+                <Slider x:Name="SeekSlider"
+                        Minimum="0"
+                        Maximum="1"
+                        Value="0"
+                        VerticalAlignment="Center"
+                        IsMoveToPointEnabled="True" />
+            </DockPanel>
+
+            <!-- Hàng nút điều khiển phát, tốc độ, lặp, âm lượng và tắt tiếng -->
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="Âm lượng:"
+                               VerticalAlignment="Center"
+                               Margin="0,0,6,0" />
+                    <Slider x:Name="VolumeSlider"
+                            Width="90"
+                            Minimum="0"
+                            Maximum="1"
+                            SmallChange="0.05"
+                            LargeChange="0.1"
+                            IsMoveToPointEnabled="True"
+                            VerticalAlignment="Center"
+                            Value="{Binding Volume, ElementName=Player}" />
+                    <CheckBox x:Name="MuteCheckBox"
+                              Content="Tắt tiếng"
+                              VerticalAlignment="Center"
+                              Margin="10,0,0,0"
+                              IsChecked="{Binding IsMuted, ElementName=Player}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Button x:Name="PrevButton"
+                            Content="Prev"
+                            Width="48"
+                            Margin="0,0,4,0"
+                            Padding="4,3" />
+                    <Button x:Name="PlayButton"
+                            Content="Play"
+                            Width="48"
+                            Margin="0,0,4,0"
+                            Padding="4,3" />
+                    <Button x:Name="PauseButton"
+                            Content="Pause"
+                            Width="52"
+                            Margin="0,0,4,0"
+                            Padding="4,3" />
+                    <Button x:Name="StopButton"
+                            Content="Stop"
+                            Width="48"
+                            Margin="0,0,4,0"
+                            Padding="4,3" />
+                    <Button x:Name="NextButton"
+                            Content="Next"
+                            Width="48"
+                            Margin="0,0,12,0"
+                            Padding="4,3" />
+
+                    <TextBlock Text="Tốc độ:"
+                               VerticalAlignment="Center"
+                               Margin="0,0,6,0" />
+                    <ComboBox x:Name="SpeedComboBox"
+                              Width="62"
+                              VerticalAlignment="Center"
+                              ItemsSource="{Binding SpeedOptions}"
+                              SelectedItem="{Binding SelectedSpeed}"
+                              ItemStringFormat="{}{0:0.0}x" />
+
+                    <CheckBox x:Name="RepeatOneCheckBox"
+                              Content="Lặp 1 bài"
+                              VerticalAlignment="Center"
+                              Margin="12,0,0,0"
+                              IsChecked="{Binding IsRepeatOne}" />
+                </StackPanel>
+            </DockPanel>
+        </StackPanel>
     </Grid>
 </Window>
